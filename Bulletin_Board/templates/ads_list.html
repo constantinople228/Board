@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Объявления</title>
+</head>
+<body>
+    {% if is_logged %}
+        <button><a href="{% url 'board:create' %}">Опубликовать объявление</a></button>
+        <button><a href="{% url 'board:replies' %}">Мои отклики</a></button>
+        <button><a href="{% url 'logout' %}">Выйти</a></button>
+        {% if user_is_staff %}
+            <button><a href="{% url 'board:send_mails' %}">Сделать новостную рассылку</a></button>
+        {% endif %}
+    {% else %}
+        <button><a href="{% url 'login' %}">Войти</a></button>
+    {% endif %}
+
+    {% if ads %}
+    <table align="center" cellspacing=20>
+           <tr>
+               <th style="font-size:20px">Название</th>
+               <th style="font-size:20px">Категория</th>
+               <th style="font-size:20px">Содержание</th>
+               <th style="font-size:20px">Действия</th>
+           </tr>
+
+           {% for ad in ads %}
+           <tr>
+               <td><a>{{ ad.title }}</a></td>
+               <td>{{ ad.category }}</td>
+               <td>{{ ad.text|truncatewords:20 }}</td>
+               {% if ad.image %}
+                    <img src="{{ ad.image.url }}" alt="{{ ad.title }}" />
+               {% endif %}
+
+               {% if ad.video %}
+                    <video width="320" height="240" controls>
+                        <source src="{{ ad.video.url }}" type="video/mp4">
+                    </video>
+               {% endif %}
+               <td>
+                   {% if user == ad.author %}
+                       <button><a href="{% url 'board:ads_edit' ad.id %}">Редактировать</a></button>
+                       <button><a href="{% url 'board:delete_post' ad.id %}">Удалить</a></button>
+                   {% endif %}
+               </td>
+           </tr>
+           {% endfor %}
+       </table>
+    {% else %}
+        <h2>Объявлений нет!</h2>
+    {% endif %}
+
+</body>
+</html>
